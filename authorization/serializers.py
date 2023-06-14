@@ -7,15 +7,18 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from django.core.exceptions import ObjectDoesNotExist
 
+
 class GetUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model=User
-        fields='__all__'
-    
+        model = User
+        fields = '__all__'
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model=User
-        fields=['username', 'password',]
+        model = User
+        fields = ['account_name', 'password',]
+
 
 class TokenObtainPairSerializer(TokenObtainPairSerializer):
 
@@ -24,17 +27,17 @@ class TokenObtainPairSerializer(TokenObtainPairSerializer):
 
         if not self.user.is_active:
             raise AuthenticationFailed({
-                'detail': f"Пользователь {self.user.username} был деактивирован!"
+                'detail': f"Пользователь {self.user.account_name} был деактивирован!"
             }, code='user_deleted')
 
         data['id'] = self.user.id
-        data['username'] = self.user.username
-
+        data['account_name'] = self.user.account_name
 
         return data
 
+
 class TokenRefreshSerializer(TokenRefreshSerializer):
-    
+
     def validate(self, attrs):
         data = super().validate(attrs)
         refresh = RefreshToken(attrs['refresh'])
@@ -50,10 +53,10 @@ class TokenRefreshSerializer(TokenRefreshSerializer):
 
         if user.blocked:
             raise AuthenticationFailed({
-                'detail': f"Пользователь {user.username} был заблокирован!"
+                'detail': f"Пользователь {user.account_name} был заблокирован!"
             }, code='user_deleted')
 
         data['id'] = user.id
-        data['username'] = user.username
+        data['account_name'] = user.account_name
 
         return data

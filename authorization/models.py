@@ -21,8 +21,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     id = models.AutoField(primary_key=True)
-    username = models.CharField('Логин', max_length=50, default='', unique=True)
-    first_name = models.CharField("ФИО", max_length=100, default='', blank=True, null=True)
+    account_name = models.CharField('Логин', max_length=50, default='', unique=True)
+    username = models.CharField("ФИО", max_length=100, default='', blank=True, null=True)
     email = models.EmailField("Почта", default="email@mail.com", blank=True, null=True)
     role = models.IntegerField(verbose_name='Роль',default=BLOG_USER,choices=ROLE_TYPES)
     date_joined = models.DateTimeField("Дата присоединения", blank=True, null=True, default=timezone.now)
@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Статус доступа',
     )
 
-    USERNAME_FIELD = "username"
+    USERNAME_FIELD = "account_name"
     REQUIRED_FIELDS = []
 
     def save(self, *args, **kwargs):
