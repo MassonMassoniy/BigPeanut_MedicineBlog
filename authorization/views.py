@@ -14,11 +14,19 @@ from rest_framework_simplejwt.views import (
 )
 
 # Create your views here.
+
+
 def profile(request):
     return render(request, 'profile.html')
 
-def test(request):
-    return render(request, 'test.html')
+
+def login(request):
+    return render(request, 'login/login.html')
+
+
+def register(request):
+    return render(request, 'login/register.html')
+
 
 class UserView(ModelViewSet):
     permission_classes = [IsAuthenticated]
