@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = DefaultRouter()
+router.register('user', UserUpdateView, basename = 'user_updater')
 
 urlpatterns = [
     path('api/', include(router.urls)),
@@ -18,8 +19,11 @@ urlpatterns = [
 
     path('user/api/register/', RegisterView.as_view({'post': 'create'})),
     path('user/api/profile/', UserView.as_view({'get': 'get_current_user'})),
+    path('user/api/update/', UserUpdateView.as_view({'update':'update'})),
+    path('user/api/delete/', UserUpdateView.as_view({'destroy':'delete'})),
 
     path('user/profile/', profile, name='Profile'),
     path('user/login/', login, name='Login'),
     path('user/register/', register, name='Registration'),
+    path('user/profile/password_update/', password_update_page, name='Password_update'),
 ]

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="ru" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -25,16 +25,37 @@
             </div>
 
             <button class="btn btn-primary w-100 py-2 button1" style="margin-top:10px">Войти</button>
-            <button class="btn btn-primary w-100 py-2 button2" style="margin-top:10px">token</button>
+            <a class="p-2 link-secondary" href="http://127.0.0.1:8000/user/register/">Создайте аккаунт, если его еще нет</a>
         </form>
     </main>
 </body>
 <script>
-    $(document).ready(function(){});
+    $(document).ready(function(){
+
+        $.ajax({
+            url: 'http://127.0.0.1:8000//token/refresh/',
+            method: 'post',
+            dataType: 'json',
+            data:{
+                refresh:localStorage.getItem('refresh_token')
+            }
+        }).done(function(msg){
+            console.log(msg)
+            alert('Вход выполнен')
+            localStorage.setItem('refresh_token', msg.refresh)
+            localStorage.setItem('access_token', msg.access)
+            location.replace('http://127.0.0.1:8000/user/profile/')
+            })
+        .fail(function(xhr, status, error) {
+            // error handling
+        });
+
+    });
+
 
     $('.button1').click(function(){
         $.ajax({
-            url: 'http://localhost:8000/token/get/',
+            url: 'http://127.0.0.1:8000/token/get/',
             method: 'post',
             dataType: 'json',
             data:{
@@ -42,26 +63,24 @@
                 password:$('#PasswordInput').val()
             },
             success: function(data){}
-        }).done(function(msg){ 
-                console.log(msg)
+        }).done(function(msg){
                 localStorage.setItem('access_token', msg.access)
                 localStorage.setItem('refresh_token', msg.refresh)
                 localStorage.setItem('user_id', msg.id)
                 alert('Вы вошли в аккаунт')
+                location.replace('http://127.0.0.1:8000/user/profile/')
                 })
             .fail(function(xhr, status, error) {
                 alert('Не удалось войти в аккаунт')
                 // error handling
             }
         );
+
         $.ajax({
-            url: 'http://localhost:8000/user/api/profile/',
+            url: 'http://127.0.0.1:8000/user/api/profile/',
+            method: 'get',
             headers:{'Authorization':`Bearer ${localStorage.getItem('access_token')}`}
         }).done(function(msg){console.log(msg)})
-    });
-
-    $('.button2').click(function(){
-        console.log(localStorage.getItem('access_token'))
     });
 </script>
 </html>

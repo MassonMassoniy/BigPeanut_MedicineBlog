@@ -11,13 +11,19 @@ from django.core.exceptions import ObjectDoesNotExist
 class GetUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id', 'account_name', 'role', 'date_joined']
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['account_name', 'password',]
+
+
+class UserPrivateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
 
 
 class TokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -51,7 +57,7 @@ class TokenRefreshSerializer(TokenRefreshSerializer):
                 'detail': f"Пользователь был удалён!"
             }, code='user_does_not_exists')
 
-        if user.blocked:
+        if not user.is_active:
             raise AuthenticationFailed({
                 'detail': f"Пользователь {user.account_name} был заблокирован!"
             }, code='user_deleted')

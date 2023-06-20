@@ -1,9 +1,6 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import User
-from .forms import *
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, mixins
-from .serializers import UserSerializer, GetUserSerializer, TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework.permissions import *
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
@@ -12,9 +9,14 @@ from rest_framework_simplejwt.views import (
     TokenObtainSlidingView,
     TokenRefreshSlidingView,
 )
-
+from .models import User
+from .forms import *
+from .serializers import *
+from .permissions import AmI
 # Create your views here.
 
+def password_update_page(request):
+    return render(request, 'login/password_change.html')
 
 def profile(request):
     return render(request, 'profile.html')
@@ -41,6 +43,46 @@ class UserView(ModelViewSet):
         return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
+class UserUpdateView(ModelViewSet):
+    permission_classes = [AmI]
+    serializer_class = UserUpdateSerializer
+    queryset = User.objects.all()
+
+    def get_permissions(self):
+        return super().get_permissions()
+
+    def get_current_user(self, request, *args, **kwargs):
+        serializer = self.get_serializer(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    
+    def list(self, request, *args, **kwargs):
+        return Response('Запрещённая операция')
+    
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+
+class UserPrivateView(ModelViewSet):
+    permission_classes = [AmI]
+    serializer_class = UserPrivateSerializer
+    queryset = User.objects.all()
+
+    def get_permissions(self):
+        return super().get_permissions()
+
+    def get_current_user(self, request, *args, **kwargs):
+        serializer = self.get_serializer(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+
+
+class RegisterView(GenericViewSet, mixins.CreateModelMixin):
+    permission_classes = [AllowAny]
+    serializer_class = UserUpdateSerializer
+
+
 class TokenObtainPairView(TokenObtainSlidingView):
     permission_classes = [AllowAny]
     serializer_class = TokenObtainPairSerializer
@@ -49,8 +91,3 @@ class TokenObtainPairView(TokenObtainSlidingView):
 class TokenRefreshView(TokenRefreshSlidingView):
     permission_classes = [AllowAny]
     serializer_class = TokenRefreshSerializer
-
-
-class RegisterView(GenericViewSet, mixins.CreateModelMixin):
-    permission_classes = [AllowAny]
-    serializer_class = UserSerializer

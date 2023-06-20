@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="ru" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +11,8 @@
 </head>
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
     <main class="form-signin m-auto">
-        <form>
+        {% csrf_token %}
+        <form onsubmit="event.preventDefault();">
             <h1 class="h3 mb-3 fw-normal">Создайте аккаунт</h1>
 
             <div class="form-floating">
@@ -23,35 +24,50 @@
                 <label for="PasswordInput">Password</label>
             </div>
 
-            <button class="btn btn-primary w-100 py-2" style="margin-top:10px" id="button1">Создать</button>
+            <button class="btn btn-primary w-100 py-2 button1" style="margin-top:10px">Создать</button>
+
+            <a class="p-2 link-secondary" href="http://127.0.0.1:8000/user/login/">Войдите, если уже есть аккаунт</a>
         </form>
     </main>
 </body>
-<script>
+<script type='text/javascript'>
     $(document).ready(function(){
+
         $.ajax({
-            url: 'http://localhost:8000/user/api/profile/',
-            headers: {'Authorization':`Bearer ${localStorage.getItem('access_token')}`},
+            url: 'http://127.0.0.1:8000//token/refresh/',
+            method: 'post',
+            dataType: 'json',
+            data:{
+                refresh:localStorage.getItem('refresh_token')
+            }
         }).done(function(msg){
             console.log(msg)
-            alert('done')
+            alert('Вход выполнен')
+            localStorage.setItem('refresh_token', msg.refresh)
+            localStorage.setItem('access_token', msg.access)
+            location.replace('http://127.0.0.1:8000/user/profile/')
             })
         .fail(function(xhr, status, error) {
-            alert('fail')
             // error handling
         });
+
     });
 
+
     $('.button1').click(function(){
-        
-        console.log($('#AccountNameInput').val())
-        console.log($('#PasswordInput').val())
-        $.post('http://localhost:8000/user/api/register/',
-            {
+        $.ajax({
+            url: 'http://127.0.0.1:8000/user/api/register/',
+            method: 'post',
+            dataType: 'json',
+            data:{
                 account_name:$('#AccountNameInput').val(),
                 password:$('#PasswordInput').val()
-            }).done(function(msg){
+            },
+            success: function(data){}
+        }).done(function(msg){ 
+                console.log(msg)
                 alert('Аккаунт был создан')
+                location.replace('http://127.0.0.1:8000/user/login/')
                 })
             .fail(function(xhr, status, error) {
                 alert('Не удалось создать аккаунт')
