@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 router = DefaultRouter()
-router.register('post', PostView, basename = 'post_api')
+router.register('post', PostUpdateView, basename = 'post_api')
 
 urlpatterns = [
     path('api/', include(router.urls)),
@@ -16,7 +16,10 @@ urlpatterns = [
 
     path('', home_view, name='home-view'),
     path('post/new/', post_page, name='post_page'),
-    path('post/<str:pk>/', post_view, name='post'),
-
-    path('post/comment/api/create/', CommentView.as_view({'post':'create'})),    
+    path('post/<int:pk>/', post_view, name='post'),
+    
+    path('post/update/', PostUpdateView.as_view({'patch':'update'})),
+    path('post/comment/api/create/', CommentView.as_view({'post':'create'})),
+    path('post/list/', PostView.as_view({'get':'list'})),
+    path('post/create/', PostView.as_view({'post':'create'})),
 ]

@@ -1,14 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from django.middleware.csrf import get_token
-from django.views.decorators.csrf import requires_csrf_token, csrf_exempt
 from .models import Post, Comment, Ip
-from .serializers import PostSerializer, CommentSerializer
-from authorization.permissions import AmI
+from .serializers import PostUpdateSerializer, PostSerializer, CommentSerializer
+from .permissions import IsOwner
 from .permissions import IsADoctor
 
 # Create your views here.
@@ -19,10 +17,10 @@ def index(request):
 
 
 def post_page(request):
-    csrf_token = get_token(request)
-    context = {}
-    context['csrf_token'] = csrf_token
-    return render(request, 'post_new.html', context)
+    #csrf_token = get_token(request)
+    #context = {}
+    #context['csrf_token'] = csrf_token
+    return render(request, 'post_new.html')
 
 
 class PostView(ModelViewSet):
@@ -35,10 +33,29 @@ class PostView(ModelViewSet):
     def get_permissions(self):
         if self.action in ['list','retrieve']:
             self.permission_classes = [AllowAny]
-        elif self.action in ['create']:
+        if self.action in ['create']:
             self.permission_classes = [IsADoctor]
+
         return super(self.__class__, self).get_permissions()
+
+
+class PostUpdateView(ModelViewSet):
+    permission_classes = [IsOwner]
+    serializer_class = PostUpdateSerializer
+    queryset = Post.objects.all()
+
+    def get_permissions(self):
+        return super().get_permissions()
     
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 
 class CommentView(ModelViewSet):
     #permission_classes=[IsAuthenticated]
@@ -52,8 +69,7 @@ class CommentView(ModelViewSet):
             self.permission_classes = [AllowAny]
         elif self.action in ['create']:
             self.permission_classes = [IsAuthenticated]
-        elif self.action in ['patch', 'delete']:
-            self.permission_classes = [AmI]
+        
         return super(self.__class__, self).get_permissions()
 
 
@@ -66,9 +82,6 @@ def get_client_ip(request):
     return ip
 
 
-
-
-
 def home_view(request):
     posts = Post.objects.all()
     context = {
@@ -77,8 +90,8 @@ def home_view(request):
     return render(request, 'index.html', context)
 
 
-def post_view(request, slug):
-    post = Post.objects.get(slug=slug)
+def post_view(request, pk):
+    post = get_object_or_404(Post.objects.all(), pk=pk)
 
     ip = get_client_ip(request)
 
@@ -91,4 +104,4 @@ def post_view(request, slug):
     context = {
         'post' : post,
     }
-    return render(request, 'post.html', context)
+    return render(request, 'post_single.html', context)

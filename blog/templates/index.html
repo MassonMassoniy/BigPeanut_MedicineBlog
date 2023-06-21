@@ -38,7 +38,7 @@
               <h1 class="display-4 fst-italic">{{posts.last.title}}</h1>
               <p class="lead my-3">{{posts.last.text}}</p>
               <p class="mb-2 text-body-emphasis">{{posts.last.user}} ({{posts.last.date_post}})</p>
-              <p class="lead mb-0"><a href="" class="text-white fw-bold">Continue reading...</a></p>
+              <p class="lead mb-0"><a href="http://127.0.0.1:8000/post/{{posts.last.id}}" class="text-white fw-bold">Continue reading...</a></p>
             </div>
         </div>
     </main>
@@ -48,7 +48,7 @@
 <script>
     $(document).ready(function(){
 
-        $.get("http://127.0.0.1:8000/api/post/", function(data, status){
+        $.get("http://127.0.0.1:8000/post/list/", function(data, status){
             for(let i=0;i<(data.count);i++){
                 let types_list = ['', 'Исследование', 'Обсуждение', 'Вопрос']
                 let div = document.createElement('div');
@@ -60,9 +60,9 @@
             <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary">${types_list[data.results[i].post_type]}</strong>
                 <h3 class="mb-0">${data.results[i].title}</h3>
-                <div class="mb-1 text-body-secondary">${data.results[i].user_info.username} (${data.results[i].date_post})</div>
+                <div class="mb-1 text-body-secondary">${data.results[i].user_info.account_name} (${data.results[i].date_post})</div>
                 <p class="card-text mb-auto">${data.results[i].text}</p>
-                <a href="${data.results[i].id}" class="stretched-link">Continue reading</a>
+                <a href="post/${data.results[i].id}/" class="stretched-link">Continue reading</a>
             </div>
         </div>
     </div>
