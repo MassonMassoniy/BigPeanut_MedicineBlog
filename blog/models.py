@@ -4,6 +4,12 @@ from authorization.models import User
 
 # Create your models here.
 
+class Ip(models.Model):
+    ip = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.ip
+
 
 class Post(models.Model):
     
@@ -22,6 +28,7 @@ class Post(models.Model):
     text = models.TextField(verbose_name='Текст новости')
     post_type = models.IntegerField(verbose_name='Тип поста', default=DISCUSSION, choices=POSTS_TYPES)
     date_post = models.DateTimeField(default=timezone.now, verbose_name='Дата создания поста')
+    views = models.ManyToManyField(Ip, related_name="post_views", blank=True)
 
     class Meta:
         verbose_name = 'Пост'
@@ -30,6 +37,9 @@ class Post(models.Model):
     def __str__(self) -> str:
         return self.title
     
+    def total_views(self):
+        return self.views.count()
+
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)

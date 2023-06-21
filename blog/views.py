@@ -2,8 +2,13 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .models import Post, Comment
+from rest_framework.response import Response
+from rest_framework import status
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import requires_csrf_token, csrf_exempt
+from .models import Post, Comment, Ip
 from .serializers import PostSerializer, CommentSerializer
+from authorization.permissions import AmI
 from .permissions import IsADoctor
 
 # Create your views here.
@@ -13,11 +18,18 @@ def index(request):
     return render(request, 'index.html', {'posts_list':posts_list})
 
 
+def post_page(request):
+    csrf_token = get_token(request)
+    context = {}
+    context['csrf_token'] = csrf_token
+    return render(request, 'post_new.html', context)
+
+
 class PostView(ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['title', 'description', 'text']
+    filterset_fields = ['title', 'description', 'text', 'post_type']
     #permission_classes=[IsAuthenticated, IsNewsEditor]
 
     def get_permissions(self):
@@ -40,4 +52,43 @@ class CommentView(ModelViewSet):
             self.permission_classes = [AllowAny]
         elif self.action in ['create']:
             self.permission_classes = [IsAuthenticated]
+        elif self.action in ['patch', 'delete']:
+            self.permission_classes = [AmI]
         return super(self.__class__, self).get_permissions()
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR') # В REMOTE_ADDR значение айпи пользователя
+    return ip
+
+
+
+
+
+def home_view(request):
+    posts = Post.objects.all()
+    context = {
+        'posts' : posts,
+    }
+    return render(request, 'index.html', context)
+
+
+def post_view(request, slug):
+    post = Post.objects.get(slug=slug)
+
+    ip = get_client_ip(request)
+
+    if Ip.objects.filter(ip=ip).exists():
+        post.views.add(Ip.objects.get(ip=ip))
+    else:
+        Ip.objects.create(ip=ip)
+        post.views.add(Ip.objects.get(ip=ip))  
+    
+    context = {
+        'post' : post,
+    }
+    return render(request, 'post.html', context)
