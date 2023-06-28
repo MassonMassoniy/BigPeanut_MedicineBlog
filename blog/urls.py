@@ -17,6 +17,7 @@ urlpatterns = [
     path('', home_view, name='home-view'),
     path('post/new/', post_page, name='post_page'),
     path('post/<int:pk>/', post_view, name='post'),
+    path('post/sorted/', post_sorted_page, name='post_sorted'),
     
     path('post/update/', PostUpdateView.as_view({'patch':'update'})),
     path('post/comment/api/create/', CommentView.as_view({'post':'create'})),

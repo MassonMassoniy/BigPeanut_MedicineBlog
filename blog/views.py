@@ -23,6 +23,11 @@ def post_page(request):
     return render(request, 'post_new.html')
 
 
+def post_sorted_page(request):
+    posts_list = Post.objects.all()
+    return render(request, 'post_sorted.html', {'posts_list':posts_list})
+
+
 class PostView(ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.all()

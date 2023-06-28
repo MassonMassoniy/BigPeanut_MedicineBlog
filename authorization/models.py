@@ -13,9 +13,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     ROLE_TYPES = (
         (ADMIN, 'Администратор'),             #1
-        (MODERATOR, 'Модератор'),             #2
-        (BLOG_USER, 'Читатель'),              #3
-        (DOCTOR, 'Врач'),                     #4
+        (DOCTOR, 'Врач'),                     #2
+        (MODERATOR, 'Модератор'),             #3
+        (BLOG_USER, 'Читатель'),              #4
     )
 
     objects = UserManager()
