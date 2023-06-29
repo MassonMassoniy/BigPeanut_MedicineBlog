@@ -36,13 +36,16 @@
         <h3 class="pb-2 border-bottom">{{post.description}}</h3>
         <div class="row g-4 py-3 row-cols-1 row-cols-lg-3">
             <div class="feature col">
-                <p class="mb-1 text-body-secondary">Written by {{post.user}} ({{post.date_post}})</p>
+                <p class="mb-1 text-body-secondary">Опубликован пользователем {{post.user}} ({{post.date_post}}). Количество просмотров: {{post.views.count}}</p>
                 <h2 class="pb-2">{{post.text}}</h2>
             </div>
         </div>
     </div>
 
     <div class="container nav-scroller py-1 mb-2">
+        <nav class="nav justify-content-between" style="display: inline-table;">
+            <a class="p-2 link-secondary create_comment_button" href="">Написать комментарий</a>
+        </nav>
         <nav class="nav justify-content-between" style="display: inline-table;">
             <a class="p-2 link-secondary create_post_button" href="">Изменить пост</a>
         </nav>
@@ -72,6 +75,21 @@
             <button class="btn btn-sm btn-outline-secondary button1">Применить изменения</button>
         </form>
     </div>
+
+    <div class="container comment_panel" style="display:none;">
+        <form onsubmit="event.preventDefault();">
+            {% csrf_token %}
+            <label style="margin-top: 10px;">Текст комментария:</label>
+            <input type="text" name="" id="comment_text_input" style="width: 100%;"/>
+
+            <button class="btn btn-sm btn-outline-secondary button3" style="margin-top: 10px;">Опубликовать комментарий</button>
+        </form>
+    </div>
+
+    <div class="container px-4 py-5" id="featured-3">
+        <h2 class="pb-2 border-bottom">Комментарии:</h2>
+    </div>
+
 </body>
 
 <script type="text/javascript">
@@ -100,6 +118,35 @@
                 return false;
             }
         )
+
+        $(".create_comment_button").click(
+            function () {
+                $(".comment_panel").slideToggle("slow");
+                return false;
+            }
+        )
+
+        $.get("http://127.0.0.1:8000/post/comment/list/", function(data, status){
+            for(let i=data.count-1;i>-1;i--){
+                let div = document.createElement('div');
+                div.className='container'
+                div.innerHTML=
+`
+    <div class="row mb-2">
+        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <h4 class="mb-0">Пользователь ${data.results[i].user_info.account_name} пишет:</h4>
+                <p class="card-text mb-auto">${data.results[i].text}</p>
+                <p class="mb-1 text-body-secondary">${data.results[i].date_comment}</p>
+            </div>
+        </div>
+    </div>
+`
+                console.log(data.results[i]);
+                document.body.append(div)
+            }
+        
+        });
     });
 
 
@@ -117,7 +164,7 @@
             localStorage.setItem('access_token', msg.access)
             })
         .fail(function(xhr, status, error) {
-            alert('Вход в аккайнт не выполнен')
+            alert('Вход в аккаунт не выполнен')
             // error handling
         });
     };
@@ -167,6 +214,29 @@
         };
     });
     
+    $('.button3').click(function(){
+        $.ajax({
+            url: 'http://127.0.0.1:8000/post/comment/create/',
+            headers: {
+                'Authorization':`Bearer ${localStorage.getItem('access_token')}`,
+            },
+            method: 'post',
+            dataType: 'json',
+            data: {
+                text: $('#comment_text_input').val(),
+                post: `{{post.id}}`,
+                user: localStorage.getItem('user_id'),
+            },
+        }).done(function(msg){ 
+            console.log(msg)
+            alert('Комментарий опубликован')
+            location.replace('')
+            })
+        .fail(function(xhr, status, error) {
+            refresh_token_func(localStorage.getItem('refresh_token'))
+            alert('Обновление токена, попробуйте ещё раз')
+        });
+    });
 </script>
 
 </html>

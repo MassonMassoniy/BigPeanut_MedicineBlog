@@ -20,7 +20,8 @@ urlpatterns = [
     path('post/sorted/', post_sorted_page, name='post_sorted'),
     
     path('post/update/', PostUpdateView.as_view({'patch':'update'})),
-    path('post/comment/api/create/', CommentView.as_view({'post':'create'})),
+    path('post/comment/create/', CommentView.as_view({'post':'create'})),
+    path('post/comment/list/', CommentView.as_view({'get':'list'})),
     path('post/list/', PostView.as_view({'get':'list'})),
     path('post/create/', PostView.as_view({'post':'create'})),
 ]

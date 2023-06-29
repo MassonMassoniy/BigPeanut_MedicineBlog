@@ -11,10 +11,6 @@ from .permissions import IsADoctor
 
 # Create your views here.
 
-def index(request):
-    posts_list = Post.objects.all()
-    return render(request, 'index.html', {'posts_list':posts_list})
-
 
 def post_page(request):
     #csrf_token = get_token(request)
@@ -83,7 +79,7 @@ def get_client_ip(request):
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
     else:
-        ip = request.META.get('REMOTE_ADDR') # В REMOTE_ADDR значение айпи пользователя
+        ip = request.META.get('REMOTE_ADDR')
     return ip
 
 
@@ -104,8 +100,8 @@ def post_view(request, pk):
         post.views.add(Ip.objects.get(ip=ip))
     else:
         Ip.objects.create(ip=ip)
-        post.views.add(Ip.objects.get(ip=ip))  
-    
+        post.views.add(Ip.objects.get(ip=ip))
+
     context = {
         'post' : post,
     }

@@ -52,7 +52,7 @@
     $(document).ready(function(){
 
         $.get("http://127.0.0.1:8000/post/list/", function(data, status){
-            for(let i=0;i<(data.count);i++){
+            for(let i=data.count-2;i>-1;i--){
                 let types_list = ['', 'Исследование', 'Обсуждение', 'Вопрос']
                 let div = document.createElement('div');
                 div.className='container'
