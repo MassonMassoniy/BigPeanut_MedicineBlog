@@ -42,7 +42,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Country(models.Model):
     id = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', blank=True, related_name='user_c', unique=True, primary_key=True)
-    #user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', null=True, blank=True, related_name='user_c', unique=True)
     country = models.CharField(verbose_name='Страна последнего входа', max_length=255,default='', null=True, blank=True)
 
     def __str__(self) -> str:

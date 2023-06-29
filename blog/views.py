@@ -6,16 +6,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment, Ip
 from .serializers import PostUpdateSerializer, PostSerializer, CommentSerializer
-from .permissions import IsOwner
-from .permissions import IsADoctor
+from .permissions import IsOwner, IsADoctor, IsAdmin
 
 # Create your views here.
 
 
 def post_page(request):
-    #csrf_token = get_token(request)
-    #context = {}
-    #context['csrf_token'] = csrf_token
     return render(request, 'post_new.html')
 
 
@@ -41,7 +37,7 @@ class PostView(ModelViewSet):
 
 
 class PostUpdateView(ModelViewSet):
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, IsAdmin]
     serializer_class = PostUpdateSerializer
     queryset = Post.objects.all()
 

@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Country
 from rest_framework_simplejwt.serializers import (
     TokenRefreshSerializer, TokenObtainPairSerializer
 )
@@ -6,6 +6,28 @@ from rest_framework import serializers
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from django.core.exceptions import ObjectDoesNotExist
+
+
+class CountryUpdateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Country
+        fields = ['country']
+
+    def get_user_info(self, obj):
+        serializer = GetUserSerializer(obj.user)
+        return serializer.data
+
+
+class CountryCreateSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Country
+        fields = '__all__'
+
+    def get_user_info(self, obj):
+        serializer = GetUserSerializer(obj.user)
+        return serializer.data
 
 
 class GetUserSerializer(serializers.ModelSerializer):

@@ -30,6 +30,10 @@
 </body>
 <script>
     $(document).ready(function(){
+        $.getJSON('https://json.geoiplookup.io/', function(data) {
+            console.log(data.country_name);
+          });
+
         $.ajax({
             url: 'http://127.0.0.1:8000/user/api/profile/',
             headers: {'Authorization':`Bearer ${localStorage.getItem('access_token')}`},

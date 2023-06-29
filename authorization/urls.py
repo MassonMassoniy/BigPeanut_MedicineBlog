@@ -5,6 +5,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 router = DefaultRouter()
 router.register('user', UserUpdateView, basename = 'user_updater')
+#router.register('country', CountryView, basename = 'country_viewer')
 
 urlpatterns = [
     path('api/', include(router.urls)),
@@ -17,10 +18,11 @@ urlpatterns = [
     path('token/get/', TokenObtainPairView.as_view()),
     path('token/refresh/', TokenRefreshView.as_view()),
 
+    path('user/api/country/create/', CountryCreateView.as_view({'post': 'create'})),
+    path('user/api/country/update/<int:pk>/', CountryUpdateView.as_view({'put': 'update'})),
+
     path('user/api/register/', RegisterView.as_view({'post': 'create'})),
     path('user/api/profile/', UserView.as_view({'get': 'get_current_user'})),
-    path('user/api/update/', UserUpdateView.as_view({'update':'update'})),
-    path('user/api/delete/', UserUpdateView.as_view({'destroy':'delete'})),
 
     path('user/profile/', profile, name='Profile'),
     path('user/login/', login, name='Login'),

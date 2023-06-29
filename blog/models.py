@@ -5,6 +5,7 @@ from authorization.models import User
 # Create your models here.
 
 class Ip(models.Model):
+    id = models.AutoField(primary_key=True)
     ip = models.CharField(max_length=100)
 
     def __str__(self):

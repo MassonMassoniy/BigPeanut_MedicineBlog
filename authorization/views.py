@@ -1,3 +1,4 @@
+import requests
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, mixins
@@ -9,10 +10,11 @@ from rest_framework_simplejwt.views import (
     TokenObtainSlidingView,
     TokenRefreshSlidingView,
 )
-from .models import User
+from .models import User, Country
 from .forms import *
 from .serializers import *
-from .permissions import AmI
+from .permissions import AmI, IsMyCountry
+from blog.views import get_client_ip
 # Create your views here.
 
 def password_update_page(request):
@@ -28,6 +30,30 @@ def login(request):
 
 def register(request):
     return render(request, 'login/register.html')
+
+
+class CountryUpdateView(ModelViewSet):
+    permission_classes = [IsMyCountry]
+    serializer_class = CountryUpdateSerializer
+    queryset = Country.objects.all()
+
+    def get_permissions(self):
+        return super().get_permissions()
+    
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+
+class CountryCreateView(ModelViewSet):
+    permission_classes = [IsMyCountry]
+    serializer_class = CountryCreateSerializer
+    queryset = Country.objects.all()
+
+    def get_permissions(self):
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class UserView(ModelViewSet):
