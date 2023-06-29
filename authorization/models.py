@@ -9,13 +9,12 @@ from django.contrib.auth.hashers import make_password
 # Create your models here.
 
 class User(AbstractBaseUser, PermissionsMixin):
-    ADMIN, DOCTOR, MODERATOR, BLOG_USER = range(1,5)
+    ADMIN, DOCTOR, BLOG_USER = range(1,4)
 
     ROLE_TYPES = (
         (ADMIN, 'Администратор'),             #1
         (DOCTOR, 'Врач'),                     #2
-        (MODERATOR, 'Модератор'),             #3
-        (BLOG_USER, 'Читатель'),              #4
+        (BLOG_USER, 'Читатель'),              #3
     )
 
     objects = UserManager()
@@ -36,7 +35,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def save(self, *args, **kwargs):
-        # Если пароль не хэширован, то хэшируем его перед сохранением
         if not self.password.startswith('pbkdf2_sha256'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
+
+
+class Country(models.Model):
+    id = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', blank=True, related_name='user_c', unique=True, primary_key=True)
+    #user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', null=True, blank=True, related_name='user_c', unique=True)
+    country = models.CharField(verbose_name='Страна последнего входа', max_length=255,default='', null=True, blank=True)
+
+    def __str__(self) -> str:
+            return self.title
