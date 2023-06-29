@@ -19,7 +19,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view()),
 
     path('user/api/country/create/', CountryCreateView.as_view({'post': 'create'})),
-    path('user/api/country/update/<int:pk>/', CountryUpdateView.as_view({'put': 'update'})),
+    path('user/api/country/update/<int:pk>/', CountryUpdateView.as_view({'patch': 'update'})),
 
     path('user/api/register/', RegisterView.as_view({'post': 'create'})),
     path('user/api/profile/', UserView.as_view({'get': 'get_current_user'})),

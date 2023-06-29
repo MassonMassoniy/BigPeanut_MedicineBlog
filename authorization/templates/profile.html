@@ -32,6 +32,31 @@
     $(document).ready(function(){
         $.getJSON('https://json.geoiplookup.io/', function(data) {
             console.log(data.country_name);
+            $.ajax({
+                url: 'http://127.0.0.1:8000//user/api/country/create/',
+                headers: {'Authorization':`Bearer ${localStorage.getItem('access_token')}`},
+                method: 'post',
+                dataType: 'json',
+                data:{
+                    id: localStorage.getItem('user_id'),
+                    country: data.country_name
+                }
+            }).done(function(msg){})
+            .fail(function(xhr, status, error) {
+
+                $.ajax({
+                    url: `http://127.0.0.1:8000//user/api/country/update/${localStorage.getItem('user_id')}/`,
+                    headers: {'Authorization':`Bearer ${localStorage.getItem('access_token')}`},
+                    method: 'patch',
+                    dataType: 'json',
+                    data:{
+                        country: data.country_name
+                    }
+                }).done(function(msg){})
+                .fail(function(xhr, status, error) {
+                    // error handling
+                });
+            });
           });
 
         $.ajax({
