@@ -37,6 +37,10 @@
                 <button class="btn btn-sm btn-outline-secondary button2" style="margin-left:10px">Найти пост по содержанию</button>
             </nav>
             <nav class="nav d-flex" style="margin-top:10px">
+                <input type="text" name="" id="post_auth" style="width: 30%; height: 30px;"/>
+                <button class="btn btn-sm btn-outline-secondary button4" style="margin-left:10px">Отобразить посты по автору</button>
+            </nav>
+            <nav class="nav d-flex" style="margin-top:10px">
                 <p><select name="select" id="post_type" size="1">
                     <option value="1">Исследование</option>
                     <option value="2">Обсуждение</option>
@@ -58,7 +62,7 @@
         $.get("http://127.0.0.1:8000/post/list/", function(data, status){
             let types_list = ['', 'Исследование', 'Обсуждение', 'Вопрос']
             let s_name = $('#post_name').val()
-            for(let i=0;i<(data.count);i++){
+            for(let i=data.count-1;i>-1;i--){
                 let o_name = data.results[i].title
                 if (o_name.includes(s_name)){
                     let div = document.createElement('div');
@@ -88,7 +92,7 @@
         $.get("http://127.0.0.1:8000/post/list/", function(data, status){
             let types_list = ['', 'Исследование', 'Обсуждение', 'Вопрос']
             let s_name = $('#post_text').val()
-            for(let i=0;i<(data.count);i++){
+            for(let i=data.count-1;i>-1;i--){
                 let o_name = data.results[i].text
                 if (o_name.includes(s_name)){
                     let div = document.createElement('div');
@@ -118,9 +122,39 @@
         $.get("http://127.0.0.1:8000/post/list/", function(data, status){
             let types_list = ['', 'Исследование', 'Обсуждение', 'Вопрос']
             let s_type = $('#post_type').val()
-            for(let i=0;i<(data.count);i++){
+            for(let i=data.count-1;i>-1;i--){
                 let o_type = data.results[i].post_type
                 if (s_type==o_type){
+                    let div = document.createElement('div');
+                    div.className='container'
+                    div.innerHTML=
+        `
+        <div class="row mb-2">
+            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-primary">${types_list[data.results[i].post_type]}</strong>
+                    <h3 class="mb-0">${data.results[i].title}</h3>
+                    <div class="mb-1 text-body-secondary">${data.results[i].user_info.account_name} (${data.results[i].date_post})</div>
+                    <p class="card-text mb-auto">${data.results[i].text}</p>
+                    <a href="http://127.0.0.1:8000/post/${data.results[i].id}/" class="stretched-link">Continue reading</a>
+                </div>
+            </div>
+        </div>
+        `
+                    console.log(data.results[i]);
+                    document.body.append(div)
+                }
+            }
+        });
+    });
+
+    $('.button4').click(function(){
+        $.get("http://127.0.0.1:8000/post/list/", function(data, status){
+            let types_list = ['', 'Исследование', 'Обсуждение', 'Вопрос']
+            let auth = $('#post_auth').val()
+            for(let i=data.count-1;i>-1;i--){
+                let o_name = data.results[i].user_info.account_name
+                if (o_name.includes(auth)){
                     let div = document.createElement('div');
                     div.className='container'
                     div.innerHTML=

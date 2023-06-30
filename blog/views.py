@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Post, Comment, Ip
+from authorization.models import Country
 from .serializers import PostUpdateSerializer, PostSerializer, CommentSerializer
 from .permissions import IsOwner, IsADoctor, IsAdmin
 
@@ -37,7 +38,7 @@ class PostView(ModelViewSet):
 
 
 class PostUpdateView(ModelViewSet):
-    permission_classes = [IsOwner, IsAdmin]
+    permission_classes = [IsOwner|IsAdmin]
     serializer_class = PostUpdateSerializer
     queryset = Post.objects.all()
 
@@ -89,6 +90,7 @@ def home_view(request):
 
 def post_view(request, pk):
     post = get_object_or_404(Post.objects.all(), pk=pk)
+    country = get_object_or_404(Country.objects.all(), id_id=post.user)
 
     ip = get_client_ip(request)
 
@@ -100,5 +102,6 @@ def post_view(request, pk):
 
     context = {
         'post' : post,
+        'country' : country,
     }
     return render(request, 'post_single.html', context)

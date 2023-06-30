@@ -45,4 +45,4 @@ class Country(models.Model):
     country = models.CharField(verbose_name='Страна последнего входа', max_length=255,default='', null=True, blank=True)
 
     def __str__(self) -> str:
-            return self.title
+            return self.country
